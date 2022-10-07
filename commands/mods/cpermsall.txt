@@ -1,0 +1,31 @@
+const {
+  MessageEmbed
+} = require('discord.js')
+
+module.exports = {
+  name: "cpermsall",
+  aliases: ['cpa'],
+  cooldowns: 20,
+  userPerms: ['MANAGE_CHANNELS'],
+  botPerms: ['MANAGE_CHANNELS'],
+  usage: "<@role>",
+  description: 'Give Role Permission To All Text Channels',
+  run: async(client, msg, args) => {
+    let role = msg.mentions.roles.first() || msg.guild.roles.everyone
+    
+    msg.channel.send(`**Update All Permission Role ${role} In Text Channels**`).then((msg) => {
+      setTimeout(() => {
+        msg.guild.channels.cache.filter(channel => {
+          if(channel.type === 'GUILD_TEXT'){
+            channel.permissionOverwrites.edit(role, {
+              VIEW_CHANNEL: true,
+              SEND_MESSAGES: false,
+              READ_MESSAGE_HISTORY: true
+            }).then(() => msg.edit(`Updating Permission Channel **#${channel.name}**`) && console.log(`Log | Successfully Update #${channel.name}`) || msg.edit(`**Successfully Update.**`)).catch(() => console.error(`Error | Failed Update #${channel.name}`));
+          }
+        });
+      }, 2000);
+    });
+  }
+  
+}
